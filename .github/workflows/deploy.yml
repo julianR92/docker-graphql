@@ -12,27 +12,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy files to VPS
-        uses: appleboy/scp-action@master
+      - name: Sync files to VPS using rsync
+        uses: burnett01/rsync-deployments@5.2
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "."
-          target: "/home/deploy/app/app-graphql"
+          switches: "-avz --delete --filter=': .rsync-filter'"
+          path: ./
+          remote_path: /home/deploy/app/app-graphql
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy via SSH
+      - name: Build and deploy app on VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-          
             cd /home/deploy/app/app-graphql
+            npm install
+            npm run build
             docker stop myapp || true
             docker rm myapp || true
-            # Construir la nueva imagen
             docker build -t myapp:latest .
-            # Ejecutar el nuevo contenedor
-            docker run -d --name myapp -p 80:8080 myapp:latest
+            docker run -d --restart always --name myapp -p 3000:3000 myapp:latest
+
+

@@ -1,0 +1,6 @@
+# Excluir archivos/directorios no necesarios
+- .git/
+- .github/
+- node_modules/
+- *.log
+- README.md

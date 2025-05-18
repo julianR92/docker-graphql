@@ -23,4 +23,6 @@ import { TodoModule } from './todo/todo.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  //Aplicación corriendo en puerto: 3000
+}
