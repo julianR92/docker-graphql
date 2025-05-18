@@ -32,7 +32,5 @@ jobs:
             cd /home/deploy/app/app-graphql
             docker stop myapp || true
             docker rm myapp || true
-            # Construir la nueva imagen
             docker build -t myapp:latest .
-            # Ejecutar el nuevo contenedor
-            docker run -d --name myapp -p 80:8080 myapp:latest
+            docker run -d --name myapp -p 3000:3000 myapp:latest
